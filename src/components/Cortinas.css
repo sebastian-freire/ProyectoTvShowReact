@@ -1,0 +1,105 @@
+.cortina {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 50vw;
+  height: 120vh;
+  background: linear-gradient(
+    135deg,
+    var(--color-secondary-bg) 0%,
+    var(--color-hover) 100%
+  );
+  z-index: 2000;
+  transition: transform 4s cubic-bezier(0.77, 0, 0.18, 1);
+  will-change: transform;
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.3);
+}
+
+.cortina.right {
+  left: 50vw;
+  background: linear-gradient(
+    225deg,
+    var(--color-secondary-bg) 0%,
+    var(--color-hover) 100%
+  );
+  transform: translateX(0) skewY(0deg);
+}
+
+.cortina.left {
+  left: 0;
+  background: linear-gradient(
+    135deg,
+    var(--color-secondary-bg) 0%,
+    var(--color-hover) 100%
+  );
+  transform: translateX(0) skewY(0deg);
+}
+
+.cortina.open.left {
+  transform: translateX(-100vw) skewY(-18deg);
+}
+
+.cortina.open.right {
+  transform: translateX(100vw) skewY(18deg);
+}
+
+.cortina-text {
+  position: fixed;
+  top: 50%;
+  left: 0;
+  width: 100vw;
+  text-align: center;
+  font-size: 8rem; /* Texto mucho más grande */
+  color: var(--color-title);
+  z-index: 2100;
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.9), 0 0 40px var(--color-title),
+    0 0 80px var(--color-title);
+  pointer-events: none;
+  font-weight: 900; /* Texto extra bold */
+  letter-spacing: 8px; /* Más espaciado entre letras */
+  transform: translateY(-50%); /* Centrado vertical perfecto */
+  animation: slideAcross 6s ease-in-out infinite,
+    glow 2s ease-in-out infinite alternate;
+}
+
+/* Animación para que el texto se mueva de lado a lado */
+@keyframes slideAcross {
+  0% {
+    transform: translateY(-50%) translateX(-100vw);
+  }
+  15% {
+    transform: translateY(-50%) translateX(0);
+  }
+  85% {
+    transform: translateY(-50%) translateX(0);
+  }
+  100% {
+    transform: translateY(-50%) translateX(100vw);
+  }
+}
+
+@keyframes glow {
+  from {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 0 0 30px var(--color-title),
+      0 0 60px var(--color-title);
+  }
+  to {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 0 0 40px var(--color-title),
+      0 0 80px var(--color-title), 0 0 100px var(--color-title);
+  }
+}
+
+/* Responsive: Texto más pequeño en pantallas pequeñas */
+@media (max-width: 768px) {
+  .cortina-text {
+    font-size: 4rem;
+    letter-spacing: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cortina-text {
+    font-size: 3rem;
+    letter-spacing: 2px;
+  }
+}

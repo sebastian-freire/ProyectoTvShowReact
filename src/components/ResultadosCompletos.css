@@ -1,0 +1,232 @@
+.resultados-completos {
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+  background: var(--color-card-bg);
+  padding: 3rem;
+  border-radius: 20px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  border: 2px solid var(--color-border);
+  position: relative;
+}
+
+.resultados-completos h3 {
+  color: #1a202c; /* Color muy oscuro para máxima legibilidad */
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+}
+
+.medida-real-display {
+  background: var(--color-secondary-bg);
+  color: var(--color-title);
+  padding: 1.5rem;
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  box-shadow: 0 4px 16px rgba(0, 53, 169, 0.3);
+}
+
+.resultados-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  animation: slideInResults 0.8s ease-out;
+}
+
+.resultado-item {
+  background: white;
+  margin-bottom: 1rem;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid var(--color-title);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  animation: fadeInItem 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+.resultado-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.resultado-item:nth-child(1) {
+  animation-delay: 0.1s;
+  border-left-color: #ffd700;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 215, 0, 0.05) 0%,
+    rgba(255, 215, 0, 0.02) 100%
+  );
+}
+
+.resultado-item:nth-child(2) {
+  animation-delay: 0.2s;
+  border-left-color: #c0c0c0;
+  background: linear-gradient(
+    135deg,
+    rgba(192, 192, 192, 0.05) 0%,
+    rgba(192, 192, 192, 0.02) 100%
+  );
+}
+
+.resultado-item:nth-child(3) {
+  animation-delay: 0.3s;
+  border-left-color: #cd7f32;
+  background: linear-gradient(
+    135deg,
+    rgba(205, 127, 50, 0.05) 0%,
+    rgba(205, 127, 50, 0.02) 100%
+  );
+}
+
+.resultado-item:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+.resultado-item:nth-child(5) {
+  animation-delay: 0.5s;
+}
+
+.resultado-item:nth-child(6) {
+  animation-delay: 0.6s;
+}
+
+.resultado-item:nth-child(7) {
+  animation-delay: 0.7s;
+}
+
+.resultado-item:nth-child(8) {
+  animation-delay: 0.8s;
+}
+
+@keyframes slideInResults {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInItem {
+  from {
+    opacity: 0;
+    transform: translateX(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* Título de clasificación con animación */
+.classification-title {
+  color: #1a202c; /* Color muy oscuro para máxima legibilidad */
+  margin-bottom: 1.5rem;
+  text-align: center;
+  animation: fadeInTitle 0.6s ease-out;
+  position: relative;
+}
+
+.classification-title::after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 3px;
+  background: var(--color-title);
+  border-radius: 2px;
+}
+
+@keyframes fadeInTitle {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.restart-button {
+  width: 100%;
+  background: var(--color-btn-secondary);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 1.2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 3rem;
+  box-shadow: 0 4px 16px rgba(0, 123, 234, 0.3);
+}
+
+.restart-button:hover {
+  background: #0056b3;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 123, 234, 0.4);
+}
+
+.resultado-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.player-name-result {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #1a202c; /* Color muy oscuro para máxima legibilidad */
+}
+
+.player-details {
+  display: flex;
+  gap: 2rem;
+  font-size: 0.95rem;
+  color: #374151; /* Color oscuro pero ligeramente más suave que el nombre */
+}
+
+.estimation-detail {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #374151; /* Mismo color oscuro para consistencia */
+  font-weight: 500; /* Agregamos un poco más de peso para mejor legibilidad */
+}
+
+.points-display {
+  background: var(--color-title);
+  color: var(--color-hover); /* Ya está usando un color oscuro */
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  box-shadow: 0 2px 8px rgba(252, 210, 15, 0.3);
+}
+
+/* Asegurar que las medallas no interfieran con la legibilidad */
+.resultado-item:nth-child(1) .player-name-result::after {
+  content: " 🥇";
+}
+
+.resultado-item:nth-child(2) .player-name-result::after {
+  content: " 🥈";
+}
+
+.resultado-item:nth-child(3) .player-name-result::after {
+  content: " 🥉";
+}

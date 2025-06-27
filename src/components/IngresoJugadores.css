@@ -1,0 +1,114 @@
+.ingreso-jugadores {
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+  background: var(--color-card-bg);
+  padding: 3rem;
+  border-radius: 20px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  border: 2px solid var(--color-border);
+  position: relative;
+}
+
+.ingreso-jugadores h2 {
+  color: var(--color-hover);
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.ingreso-jugadores .input-group {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.ingreso-jugadores input {
+  flex: 1;
+  padding: 1rem;
+  border: 2px solid var(--color-border);
+  border-radius: 12px;
+  background: white;
+  color: var(--color-hover);
+  font-size: 1rem;
+}
+
+.ingreso-jugadores input:focus {
+  border-color: var(--color-title);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(252, 210, 15, 0.1);
+}
+
+.ingreso-jugadores button {
+  background: var(--color-btn-primary);
+  color: var(--color-hover);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  padding: 1rem 1.5rem;
+}
+
+.ingreso-jugadores button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(252, 210, 15, 0.3);
+}
+
+.ingreso-jugadores button:disabled {
+  background: #9ca3af;
+  color: #6b7280;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.ingreso-jugadores .add-button {
+  min-width: 120px;
+}
+
+.ingreso-jugadores .continue-button {
+  width: 100%;
+  background: var(--color-btn-secondary);
+  color: white;
+  margin-top: 2rem;
+  padding: 1.2rem;
+  font-size: 1.1rem;
+}
+
+.ingreso-jugadores .continue-button:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+.players-list {
+  background: rgba(0, 53, 169, 0.05);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 2rem 0;
+  border: 1px solid var(--color-border);
+}
+
+.players-list h3 {
+  color: var(--color-hover);
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.players-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.players-list li {
+  background: white;
+  margin-bottom: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  color: var(--color-hover);
+  font-weight: 500;
+  border-left: 4px solid var(--color-title);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+.ingreso-jugadores li {
+  margin-bottom: 6px;
+}

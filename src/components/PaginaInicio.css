@@ -1,0 +1,357 @@
+.pagina-inicio {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-bg) 0%,
+    rgba(18, 23, 28, 0.95) 30%,
+    rgba(30, 40, 50, 0.9) 70%,
+    var(--color-primary-bg) 100%
+  );
+  position: fixed;
+  top: 0;
+  left: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Logo circular en la esquina superior */
+.logo-container {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+  z-index: 20;
+}
+
+.logo-circular {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(252, 210, 15, 0.6);
+  box-shadow: 0 4px 20px rgba(252, 210, 15, 0.3);
+  animation: logoFloat 4s ease-in-out infinite;
+  transition: all 0.3s ease;
+}
+
+.logo-circular:hover {
+  transform: scale(1.1);
+  border-color: var(--color-title);
+  box-shadow: 0 6px 30px rgba(252, 210, 15, 0.5);
+}
+
+.inicio-container {
+  text-align: center;
+  max-width: 800px;
+  padding: 2rem;
+  position: relative;
+  z-index: 10; /* Por encima del overlay */
+}
+
+.titulo-principal {
+  margin-bottom: 3rem;
+}
+
+.titulo-juego {
+  font-size: 4rem;
+  font-weight: 900;
+  line-height: 1.1;
+  margin: 0 0 1rem 0;
+  text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.6);
+}
+
+.titulo-linea {
+  display: block;
+  color: var(--color-text);
+  animation: fadeInUp 1s ease-out forwards;
+}
+
+.titulo-linea.destacado {
+  color: var(--color-title);
+  font-size: 4.5rem;
+  text-shadow: 0 0 20px var(--color-title), 0 0 40px var(--color-title);
+  animation: fadeInUp 1s ease-out 0.3s forwards, glow 3s ease-in-out infinite;
+  opacity: 0;
+}
+
+.subtitulo {
+  font-size: 1.3rem;
+  color: var(--color-text);
+  margin: 0;
+  opacity: 0;
+  animation: fadeInUp 1s ease-out 0.6s forwards;
+  font-weight: 500;
+}
+
+.descripcion-juego {
+  margin: 3rem 0;
+  opacity: 0;
+  animation: fadeInUp 1s ease-out 0.9s forwards;
+}
+
+.icono-juego {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+.descripcion-juego p {
+  font-size: 1.1rem;
+  color: var(--color-text);
+  margin: 0;
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+.boton-comenzar {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    var(--color-btn-primary) 0%,
+    #e6bc0f 100%
+  );
+  color: var(--color-hover);
+  border: none;
+  padding: 1.5rem 3rem;
+  font-size: 1.3rem;
+  font-weight: 700;
+  border-radius: 50px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 32px rgba(252, 210, 15, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  opacity: 0;
+  animation: fadeInUp 1s ease-out 1.2s forwards, pulse 2s ease-in-out infinite;
+  margin-top: 2rem;
+}
+
+.boton-comenzar:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 15px 50px rgba(252, 210, 15, 0.6);
+}
+
+.boton-comenzar:active {
+  transform: translateY(-2px) scale(1.02);
+}
+
+.boton-texto {
+  position: relative;
+  z-index: 2;
+  display: block;
+}
+
+.boton-efecto {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.6s ease;
+}
+
+.boton-comenzar:hover .boton-efecto {
+  left: 100%;
+}
+
+/* Decoración de fondo con círculos sutiles */
+.decoracion-fondo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.circulo {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(252, 210, 15, 0.08) 0%,
+    rgba(252, 210, 15, 0.04) 50%,
+    transparent 100%
+  );
+  animation: float 8s ease-in-out infinite;
+}
+
+.circulo-1 {
+  width: 300px;
+  height: 300px;
+  top: 10%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.circulo-2 {
+  width: 200px;
+  height: 200px;
+  top: 60%;
+  right: 15%;
+  animation-delay: 2s;
+}
+
+.circulo-3 {
+  width: 400px;
+  height: 400px;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  animation-delay: 4s;
+}
+
+/* Animaciones */
+@keyframes logoFloat {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(5deg);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    text-shadow: 0 0 20px var(--color-title), 0 0 40px var(--color-title);
+  }
+  50% {
+    text-shadow: 0 0 30px var(--color-title), 0 0 60px var(--color-title),
+      0 0 80px var(--color-title);
+  }
+}
+
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: 0 8px 32px rgba(252, 210, 15, 0.4);
+  }
+  50% {
+    box-shadow: 0 8px 32px rgba(252, 210, 15, 0.6);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-20px) rotate(120deg);
+  }
+  66% {
+    transform: translateY(10px) rotate(240deg);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .logo-container {
+    top: 20px;
+    left: 20px;
+  }
+
+  .logo-circular {
+    width: 60px;
+    height: 60px;
+  }
+
+  .titulo-juego {
+    font-size: 2.5rem;
+  }
+
+  .titulo-linea.destacado {
+    font-size: 3rem;
+  }
+
+  .subtitulo {
+    font-size: 1.1rem;
+  }
+
+  .boton-comenzar {
+    padding: 1.2rem 2rem;
+    font-size: 1.1rem;
+  }
+
+  .circulo {
+    display: none; /* Ocultar decoraciones en móvil */
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-container {
+    top: 15px;
+    left: 15px;
+  }
+
+  .logo-circular {
+    width: 50px;
+    height: 50px;
+    border-width: 2px;
+  }
+
+  .inicio-container {
+    padding: 1rem;
+  }
+
+  .titulo-juego {
+    font-size: 2rem;
+  }
+
+  .titulo-linea.destacado {
+    font-size: 2.2rem;
+  }
+
+  .icono-juego {
+    font-size: 3rem;
+  }
+
+  .boton-comenzar {
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    letter-spacing: 1px;
+  }
+}
