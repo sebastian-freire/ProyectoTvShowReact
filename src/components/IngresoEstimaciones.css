@@ -1,68 +1,66 @@
-.ingreso-estimaciones {
-  max-width: 700px;
-  width: 100%;
-  margin: 0 auto;
+.ingreso-estimaciones-root {
   background: var(--color-card-bg);
   padding: 3rem;
   border-radius: 20px;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
   border: 2px solid var(--color-border);
-  position: relative;
 }
 
-.ingreso-estimaciones h2 {
+.ingreso-estimaciones-root h2 {
   color: var(--color-hover);
-  margin-bottom: 2.5rem;
-  text-align: center;
+  margin-bottom: 2rem;
+  justify-content: center;
   font-size: 2rem;
+  font-weight: 700;
 }
 
-.estimation-form {
+.ingreso-estimaciones-form {
   display: grid;
   gap: 1.5rem;
 }
 
-.player-estimation {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  border-left: 4px solid var(--color-title);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+.ingreso-estimaciones-player {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border-left: 8px solid var(--color-title);
+  background-color: rgb(255, 255, 255);
+  border-radius: 16px;
 }
 
-.player-estimation:hover {
+.ingreso-estimaciones-player:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
-.player-name-label {
+.ingreso-estimaciones-player-label {
   display: block;
   color: var(--color-hover);
   font-weight: 600;
-  margin-bottom: 0.75rem;
   font-size: 1.1rem;
+  margin: 0.4rem;
 }
 
-.estimation-input {
+.ingreso-estimaciones-input {
   width: 100%;
-  padding: 1rem;
   border: 2px solid var(--color-border);
   border-radius: 8px;
   background: #f8fafc;
   color: var(--color-hover);
   font-size: 1rem;
+  padding: 1rem; /* Refuerza el padding para sobreescribir el global */
+  font-family: inherit;
+  box-sizing: border-box; /* Asegura que el width incluya el padding y border */
   transition: all 0.3s ease;
 }
 
-.estimation-input:focus {
+.ingreso-estimaciones-input:focus {
   border-color: var(--color-title);
   outline: none;
   box-shadow: 0 0 0 3px rgba(252, 210, 15, 0.1);
   background: white;
 }
 
-.submit-button {
+.ingreso-estimaciones-submit {
   width: 100%;
   background: var(--color-btn-secondary);
   color: white;
@@ -77,13 +75,13 @@
   box-shadow: 0 4px 16px rgba(0, 123, 234, 0.3);
 }
 
-.submit-button:hover:not(:disabled) {
+.ingreso-estimaciones-submit:hover:not(:disabled) {
   background: #0056b3;
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(0, 123, 234, 0.4);
 }
 
-.submit-button:disabled {
+.ingreso-estimaciones-submit:disabled {
   background: #9ca3af;
   color: #6b7280;
   cursor: not-allowed;

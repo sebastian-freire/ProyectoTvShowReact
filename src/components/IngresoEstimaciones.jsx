@@ -18,12 +18,12 @@ export default function IngresoEstimaciones({ jugadores, onSubmit }) {
   };
 
   return (
-    <div className="ingreso-estimaciones">
+    <div className="ingreso-estimaciones-root">
       <h2>Estimaciones de los Jugadores</h2>
-      <form onSubmit={handleSubmit} className="estimation-form">
+      <form onSubmit={handleSubmit} className="ingreso-estimaciones-form">
         {jugadores.map((j, i) => (
-          <div key={j} className="player-estimation">
-            <label className="player-name-label">{j}</label>
+          <div key={j} className="ingreso-estimaciones-player">
+            <label className="ingreso-estimaciones-player-label">{j}</label>
             <input
               type="text"
               inputMode="decimal"
@@ -31,12 +31,12 @@ export default function IngresoEstimaciones({ jugadores, onSubmit }) {
               value={valores[i]}
               onChange={(e) => handleChange(i, e.target.value)}
               placeholder="Estimación en cm"
-              className="estimation-input"
+              className="ingreso-estimaciones-input"
               required
             />
           </div>
         ))}
-        <button type="submit" className="submit-button">
+        <button type="submit" className="ingreso-estimaciones-submit">
           Enviar Todas las Estimaciones
         </button>
       </form>

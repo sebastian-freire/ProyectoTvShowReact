@@ -1,11 +1,42 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./Podio.css";
 
-const ALTURA_MAX = 250; // px para 1000 puntos (reducido a la mitad)
-const ALTURA_MIN = 100; // px para 0 puntos (reducido para mayor diferencia visual)
-const ANIM_DURATION = 1200; // ms
+const ALTURA_MAX = 420; // Mucho más alto para barras épicas
+const ALTURA_MIN = 120; // Más diferencia visual
+const ANIM_DURATION = 1400; // ms, animación más lenta
+const DELAY_BETWEEN = 1200; // ms entre revelaciones
 
-export default function Podio({ ranking, revelado }) {
+export default function Podio({ ranking, revelado, onFinish }) {
+  // Estado interno para controlar el avance automático
+  const [autoRevelado, setAutoRevelado] = useState(0);
+  const timeoutRef = useRef(null);
+
+  // Cuando el prop 'revelado' cambia a true/1, inicia la secuencia automática
+  useEffect(() => {
+    if (revelado) {
+      setAutoRevelado(0);
+      // Iniciar secuencia automática
+      let step = 1;
+      const next = () => {
+        setAutoRevelado(step);
+        if (step < 3) {
+          timeoutRef.current = setTimeout(() => {
+            step++;
+            next();
+          }, DELAY_BETWEEN);
+        } else if (onFinish) {
+          // Llama a onFinish cuando termina la animación del podio
+          setTimeout(() => onFinish(), DELAY_BETWEEN + ANIM_DURATION);
+        }
+      };
+      timeoutRef.current = setTimeout(next, 500); // pequeño delay inicial
+    } else {
+      setAutoRevelado(0);
+      clearTimeout(timeoutRef.current);
+    }
+    return () => clearTimeout(timeoutRef.current);
+  }, [revelado, onFinish]);
+
   // Animación de altura y puntos
   const [animVals, setAnimVals] = useState([
     { h: ALTURA_MIN, pts: 0 },
@@ -42,11 +73,11 @@ export default function Podio({ ranking, revelado }) {
   useEffect(() => {
     const orden = [2, 1, 0];
     if (
-      revelado > 0 &&
-      !animDone.current[orden[revelado - 1]] &&
-      ranking[orden[revelado - 1]]
+      autoRevelado > 0 &&
+      !animDone.current[orden[autoRevelado - 1]] &&
+      ranking[orden[autoRevelado - 1]]
     ) {
-      const idx = orden[revelado - 1];
+      const idx = orden[autoRevelado - 1];
       const targetH = getAltura(ranking[idx].puntos);
       const targetPts = ranking[idx].puntos;
       const start = performance.now();
@@ -77,66 +108,66 @@ export default function Podio({ ranking, revelado }) {
     // Cleanup
     const currentRefs = animRefs.current;
     return () => currentRefs.forEach((id) => cancelAnimationFrame(id));
-  }, [revelado, ranking]);
+  }, [autoRevelado, ranking]);
 
+  // --- EPIC BACKGROUND & ANIMATIONS ---
   return (
-    <div className="podio">
-      <div className="podio-col podio-2">
-        <div className="position-badge position-2">2</div>
+    <div className="epic-podio-bg">
+      <div className="epic-lights epic-lights-left" />
+      <div className="epic-lights epic-lights-right" />
+      <div className="epic-fireworks epic-fireworks-1" />
+      <div className="epic-fireworks epic-fireworks-2" />
+      <div className="epic-fireworks epic-fireworks-3" />
+      <div className="epic-podio-outer">
         <div
-          className={`podio-box ${
-            revelado > 1 ? "visible-podium" : "hidden-podium"
-          }`}
-          style={{
-            height: animVals[1].h
-          }}
+          className="epic-podio-bar epic-podio-2"
+          style={{ height: animVals[1].h }}
         >
-          <div className="player-name">{ranking[1]?.nombre ?? ""}</div>
-          <div className="player-points">
-            {revelado > 1 ? animVals[1].pts : ""} pts
+          <div className="epic-badge epic-badge-2">2</div>
+          <div className="epic-player epic-player-2">
+            {ranking[1]?.nombre ?? ""}
           </div>
-          <div className="player-estimation">
-            {ranking[1] && revelado > 1 ? `${ranking[1].estimacion} cm` : ""}
+          <div className="epic-points">
+            {autoRevelado > 1 ? animVals[1].pts : ""} pts
+          </div>
+          <div className="epic-estimation">
+            {ranking[1] && autoRevelado > 1
+              ? `${ranking[1].estimacion} cm`
+              : ""}
           </div>
         </div>
-      </div>
-
-      <div className="podio-col podio-1">
-        <div className="position-badge position-1">1</div>
         <div
-          className={`podio-box ${
-            revelado > 2 ? "visible-podium" : "hidden-podium"
-          }`}
-          style={{
-            height: animVals[0].h
-          }}
+          className="epic-podio-bar epic-podio-1"
+          style={{ height: animVals[0].h }}
         >
-          <div className="player-name">{ranking[0]?.nombre ?? ""}</div>
-          <div className="player-points">
-            {revelado > 2 ? animVals[0].pts : ""} pts
+          <div className="epic-badge epic-badge-1">1</div>
+          <div className="epic-player epic-player-1">
+            {ranking[0]?.nombre ?? ""}
           </div>
-          <div className="player-estimation">
-            {ranking[0] && revelado > 2 ? `${ranking[0].estimacion} cm` : ""}
+          <div className="epic-points">
+            {autoRevelado > 2 ? animVals[0].pts : ""} pts
+          </div>
+          <div className="epic-estimation">
+            {ranking[0] && autoRevelado > 2
+              ? `${ranking[0].estimacion} cm`
+              : ""}
           </div>
         </div>
-      </div>
-
-      <div className="podio-col podio-3">
-        <div className="position-badge position-3">3</div>
         <div
-          className={`podio-box ${
-            revelado > 0 ? "visible-podium" : "hidden-podium"
-          }`}
-          style={{
-            height: animVals[2].h
-          }}
+          className="epic-podio-bar epic-podio-3"
+          style={{ height: animVals[2].h }}
         >
-          <div className="player-name">{ranking[2]?.nombre ?? ""}</div>
-          <div className="player-points">
-            {revelado > 0 ? animVals[2].pts : ""} pts
+          <div className="epic-badge epic-badge-3">3</div>
+          <div className="epic-player epic-player-3">
+            {ranking[2]?.nombre ?? ""}
           </div>
-          <div className="player-estimation">
-            {ranking[2] && revelado > 0 ? `${ranking[2].estimacion} cm` : ""}
+          <div className="epic-points">
+            {autoRevelado > 0 ? animVals[2].pts : ""} pts
+          </div>
+          <div className="epic-estimation">
+            {ranking[2] && autoRevelado > 0
+              ? `${ranking[2].estimacion} cm`
+              : ""}
           </div>
         </div>
       </div>
