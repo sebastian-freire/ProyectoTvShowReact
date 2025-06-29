@@ -1,116 +1,238 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./Podio.css";
 
-const ALTURA_MAX = 420; // Mucho más alto para barras épicas
-const ALTURA_MIN = 120; // Más diferencia visual
-const ANIM_DURATION = 1400; // ms, animación más lenta
-const DELAY_BETWEEN = 1200; // ms entre revelaciones
+// Proporciones relativas para los podios (1ro, 2do, 3ro)
+const ALTURA_PRIMERO = 0.52; // 100%
+const ALTURA_SEGUNDO = 0.4; // 78%
+const ALTURA_TERCERO = 0.3; // 64%
+const ANIM_DURATION = 2500; // ms, animación más lenta (era 1200ms)
+const DELAY_BETWEEN = 1500; // ms entre revelaciones (era 1000ms)
 
-export default function Podio({ ranking, revelado, onFinish }) {
+export default function Podio({
+  ranking,
+  medidaReal,
+  revelado,
+  onFinish,
+  onVerResultadosCompletos
+}) {
   // Estado interno para controlar el avance automático
   const [autoRevelado, setAutoRevelado] = useState(0);
   const timeoutRef = useRef(null);
+  const isAnimatingRef = useRef(false);
 
-  // Cuando el prop 'revelado' cambia a true/1, inicia la secuencia automática
-  useEffect(() => {
-    if (revelado) {
-      setAutoRevelado(0);
-      // Iniciar secuencia automática
-      let step = 1;
-      const next = () => {
-        setAutoRevelado(step);
-        if (step < 3) {
-          timeoutRef.current = setTimeout(() => {
-            step++;
-            next();
-          }, DELAY_BETWEEN);
-        } else if (onFinish) {
-          // Llama a onFinish cuando termina la animación del podio
-          setTimeout(() => onFinish(), DELAY_BETWEEN + ANIM_DURATION);
-        }
-      };
-      timeoutRef.current = setTimeout(next, 500); // pequeño delay inicial
-    } else {
-      setAutoRevelado(0);
-      clearTimeout(timeoutRef.current);
-    }
-    return () => clearTimeout(timeoutRef.current);
-  }, [revelado, onFinish]);
+  // Estado para controlar la animación de los nombres
+  const [nombreVisible, setNombreVisible] = useState([false, false, false]);
 
-  // Animación de altura y puntos
+  // Animación de puntos y centímetros y el estado actual de cada podio
   const [animVals, setAnimVals] = useState([
-    { h: ALTURA_MIN, pts: 0 },
-    { h: ALTURA_MIN, pts: 0 },
-    { h: ALTURA_MIN, pts: 0 }
+    { pts: 0, cms: "0.0" },
+    { pts: 0, cms: "0.0" },
+    { pts: 0, cms: "0.0" }
   ]);
-  const animRefs = useRef([null, null, null]);
   const animDone = useRef([false, false, false]);
 
-  // Calcula la altura proporcional para cada barra
-  const getAltura = (pts) => {
-    if (typeof pts !== "number") return ALTURA_MIN;
-    return Math.round(
-      ALTURA_MIN +
-        ((ALTURA_MAX - ALTURA_MIN) * Math.max(0, Math.min(pts, 1000))) / 1000
-    );
-  };
+  // Estado para mantener las barras visibles incluso después de terminar la animación
+  const [animacionFinalizada, setAnimacionFinalizada] = useState(false);
 
-  // Determinar colores según empate
-  const colores = ["oro", "plata", "bronce"];
-  const podioColores = [null, null, null];
-  if (ranking.length > 0) {
-    podioColores[0] = colores[0];
-    for (let i = 1; i < 3; i++) {
-      if (ranking[i] && ranking[i].puntos === ranking[i - 1].puntos) {
-        podioColores[i] = podioColores[i - 1];
-      } else {
-        podioColores[i] = colores[i];
-      }
-    }
-  }
+  // Estado para controlar si es la primera vez que aparece el botón
+  const [primeraVezBoton, setPrimeraVezBoton] = useState(true);
 
-  // Animar solo la columna que corresponde al nuevo revelado
+  // Cuando el prop 'revelado' cambia a true, inicia la secuencia automática
   useEffect(() => {
-    const orden = [2, 1, 0];
-    if (
-      autoRevelado > 0 &&
-      !animDone.current[orden[autoRevelado - 1]] &&
-      ranking[orden[autoRevelado - 1]]
-    ) {
-      const idx = orden[autoRevelado - 1];
-      const targetH = getAltura(ranking[idx].puntos);
+    const resetAnimation = () => {
+      // Reiniciar todos los estados y referencias
+      setAnimVals([
+        { pts: 0, cms: "0.0" },
+        { pts: 0, cms: "0.0" },
+        { pts: 0, cms: "0.0" }
+      ]);
+      setNombreVisible([false, false, false]);
+      setAnimacionFinalizada(false);
+      setAutoRevelado(0);
+      setPrimeraVezBoton(true); // Resetear para que la animación se ejecute de nuevo
+      animDone.current = [false, false, false];
+      isAnimatingRef.current = false;
+      clearTimeout(timeoutRef.current);
+    };
+
+    if (revelado && !isAnimatingRef.current) {
+      // Si la animación ya se completó anteriormente, reiniciamos todo
+      if (animacionFinalizada) {
+        resetAnimation();
+      }
+
+      // Reiniciar el estado de animación
+      setAnimVals([
+        { pts: 0, cms: "0.0" },
+        { pts: 0, cms: "0.0" },
+        { pts: 0, cms: "0.0" }
+      ]);
+
+      // Solo reiniciar visibilidad de nombres si es la primera animación
+      if (autoRevelado === 0) {
+        setNombreVisible([false, false, false]);
+      }
+
+      // Resetear animacionFinalizada si comenzamos una nueva animación
+      setAnimacionFinalizada(false);
+
+      animDone.current = [false, false, false];
+
+      // Limpiar timeouts previos
+      clearTimeout(timeoutRef.current);
+
+      // Marcar como animando
+      isAnimatingRef.current = true;
+      setAutoRevelado(0);
+
+      // Iniciar secuencia automática
+      const animacionSecuencial = () => {
+        // Primer paso: mostrar el tercer puesto (índice 2)
+        setAutoRevelado(1);
+        setTimeout(() => {
+          setNombreVisible((prev) => {
+            const nuevo = [...prev];
+            nuevo[2] = true; // Mostrar nombre del 3er puesto
+            return nuevo;
+          });
+
+          // Segundo paso: mostrar el segundo puesto (índice 1)
+          setTimeout(() => {
+            setAutoRevelado(2);
+            setTimeout(() => {
+              setNombreVisible((prev) => {
+                const nuevo = [...prev];
+                nuevo[1] = true; // Mostrar nombre del 2do puesto
+                return nuevo;
+              });
+
+              // Tercer paso: mostrar el primer puesto (índice 0)
+              setTimeout(() => {
+                setAutoRevelado(3);
+                setTimeout(() => {
+                  setNombreVisible((prev) => {
+                    const nuevo = [...prev];
+                    nuevo[0] = true; // Mostrar nombre del 1er puesto
+                    return nuevo;
+                  });
+
+                  // Finalmente, llamar a onFinish cuando toda la animación termina
+                  setTimeout(() => {
+                    // Aseguramos que todos los nombres estén visibles al finalizar
+                    setNombreVisible([true, true, true]);
+                    // Indicar que la animación ha finalizado para mantener las barras arriba
+                    setAnimacionFinalizada(true);
+                    if (onFinish) {
+                      onFinish();
+                    }
+                    isAnimatingRef.current = false;
+                  }, DELAY_BETWEEN);
+                }, ANIM_DURATION * 0.8);
+              }, DELAY_BETWEEN);
+            }, ANIM_DURATION * 0.8);
+          }, DELAY_BETWEEN);
+        }, ANIM_DURATION * 0.8);
+      };
+
+      // Pequeño delay inicial
+      timeoutRef.current = setTimeout(animacionSecuencial, 500);
+    } else if (!revelado) {
+      // Si revelado cambia a false, detenemos cualquier animación en progreso
+      // pero mantenemos las alturas de las barras y la visibilidad de los nombres
+      clearTimeout(timeoutRef.current);
+      isAnimatingRef.current = false;
+      // No reiniciamos autoRevelado ni animacionFinalizada para mantener el estado visual
+    }
+
+    // Cleanup function
+    return () => {
+      clearTimeout(timeoutRef.current);
+    };
+  }, [revelado, onFinish, autoRevelado, animacionFinalizada]);
+
+  // Actualizar los puntos de la posición actual
+  useEffect(() => {
+    // Si la animación ya finalizó o no hay revelado, no hacemos nada
+    if (autoRevelado <= 0 || (animacionFinalizada && autoRevelado >= 3)) return;
+
+    // Determinar qué posición está siendo revelada actualmente
+    let posicionesAAnimar = [];
+    if (autoRevelado >= 1) posicionesAAnimar.push(2); // Tercero
+    if (autoRevelado >= 2) posicionesAAnimar.push(1); // Segundo
+    if (autoRevelado >= 3) posicionesAAnimar.push(0); // Primero
+
+    // Animar cada posición que corresponda
+    posicionesAAnimar.forEach((idx) => {
+      // Si ya se animó esta barra o no hay datos para ella, salimos
+      if (animDone.current[idx] || !ranking[idx]) return;
+
       const targetPts = ranking[idx].puntos;
-      const start = performance.now();
-      const animate = (now) => {
-        const elapsed = Math.min(1, (now - start) / ANIM_DURATION);
+      const targetCms = ranking[idx].estimacion;
+      let startTime = null;
+
+      const animate = (timestamp) => {
+        if (!startTime) startTime = timestamp;
+        const elapsed = timestamp - startTime;
+        const progress = Math.min(1, elapsed / ANIM_DURATION);
+
         setAnimVals((prev) => {
           const next = [...prev];
           next[idx] = {
-            h: ALTURA_MIN + (targetH - ALTURA_MIN) * elapsed,
-            pts: Math.round(targetPts * elapsed)
+            pts: Math.round(targetPts * progress),
+            // Formato con un decimal para los cm, manteniendo siempre un decimal
+            cms: (targetCms * progress).toFixed(1)
           };
           return next;
         });
-        if (elapsed < 1) {
-          animRefs.current[idx] = requestAnimationFrame(animate);
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
         } else {
           setAnimVals((prev) => {
             const next = [...prev];
-            next[idx] = { h: targetH, pts: targetPts };
+            next[idx] = {
+              pts: targetPts,
+              cms: targetCms.toFixed(1)
+            };
             return next;
           });
           animDone.current[idx] = true;
         }
       };
-      cancelAnimationFrame(animRefs.current[idx]);
-      animRefs.current[idx] = requestAnimationFrame(animate);
-    }
-    // Cleanup
-    const currentRefs = animRefs.current;
-    return () => currentRefs.forEach((id) => cancelAnimationFrame(id));
-  }, [autoRevelado, ranking]);
 
-  // --- EPIC BACKGROUND & ANIMATIONS ---
+      requestAnimationFrame(animate);
+    });
+  }, [autoRevelado, ranking, animacionFinalizada]);
+
+  // Obtener la altura según la posición y el contenedor
+  const getBarraHeight = (posicion, maxHeightPx) => {
+    switch (posicion) {
+      case 0:
+        return maxHeightPx * ALTURA_PRIMERO;
+      case 1:
+        return maxHeightPx * ALTURA_SEGUNDO;
+      case 2:
+        return maxHeightPx * ALTURA_TERCERO;
+      default:
+        return maxHeightPx * ALTURA_TERCERO;
+    }
+  };
+
+  // Hook para obtener el alto disponible del podio
+  const podioOuterRef = useRef(null);
+  const [maxHeight, setMaxHeight] = useState(360); // valor por defecto
+
+  useEffect(() => {
+    const updateHeight = () => {
+      if (podioOuterRef.current) {
+        setMaxHeight(podioOuterRef.current.offsetHeight || 360);
+      }
+    };
+    updateHeight();
+    window.addEventListener("resize", updateHeight);
+    return () => window.removeEventListener("resize", updateHeight);
+  }, []);
+
   return (
     <div className="epic-podio-bg">
       <div className="epic-lights epic-lights-left" />
@@ -118,59 +240,119 @@ export default function Podio({ ranking, revelado, onFinish }) {
       <div className="epic-fireworks epic-fireworks-1" />
       <div className="epic-fireworks epic-fireworks-2" />
       <div className="epic-fireworks epic-fireworks-3" />
-      <div className="epic-podio-outer">
+
+      {/* Revelación épica de la medida real */}
+      {animacionFinalizada && (
+        <div
+          className={`epic-medida-real ${primeraVezBoton ? "revealing" : ""}`}
+        >
+          <div className="epic-medida-title">¡MEDIDA REAL!</div>
+          <div className="epic-medida-value">
+            <span className="epic-numero">{medidaReal}</span>
+            <span className="epic-unidad">cm</span>
+          </div>
+          <div className="epic-medida-sparkles">
+            <div className="sparkle sparkle-1"></div>
+            <div className="sparkle sparkle-2"></div>
+            <div className="sparkle sparkle-3"></div>
+            <div className="sparkle sparkle-4"></div>
+            <div className="sparkle sparkle-5"></div>
+            <div className="sparkle sparkle-6"></div>
+          </div>
+        </div>
+      )}
+
+      {/* Área para botón de resultados completos */}
+      <div className="podio-footer"></div>
+
+      <div className="epic-podio-outer" ref={podioOuterRef}>
         <div
           className="epic-podio-bar epic-podio-2"
-          style={{ height: animVals[1].h }}
+          style={{
+            height: animacionFinalizada
+              ? getBarraHeight(1, maxHeight)
+              : autoRevelado >= 2
+              ? getBarraHeight(1, maxHeight)
+              : "0px"
+          }}
         >
-          <div className="epic-badge epic-badge-2">2</div>
-          <div className="epic-player epic-player-2">
+          <div className={`epic-badge epic-badge-2`}>2</div>
+          <div
+            className={`epic-player epic-player-2 ${
+              nombreVisible[1] ? "animate" : ""
+            }`}
+          >
             {ranking[1]?.nombre ?? ""}
           </div>
-          <div className="epic-points">
-            {autoRevelado > 1 ? animVals[1].pts : ""} pts
-          </div>
+          <div className="epic-points">{animVals[1].pts} pts</div>
           <div className="epic-estimation">
-            {ranking[1] && autoRevelado > 1
-              ? `${ranking[1].estimacion} cm`
-              : ""}
+            <span className="epic-cm-value">{animVals[1].cms}</span> cm
           </div>
         </div>
         <div
           className="epic-podio-bar epic-podio-1"
-          style={{ height: animVals[0].h }}
+          style={{
+            height: animacionFinalizada
+              ? getBarraHeight(0, maxHeight)
+              : autoRevelado >= 3
+              ? getBarraHeight(0, maxHeight)
+              : "0px"
+          }}
         >
-          <div className="epic-badge epic-badge-1">1</div>
-          <div className="epic-player epic-player-1">
+          <div className={`epic-badge epic-badge-1`}>1</div>
+          <div
+            className={`epic-player epic-player-1 ${
+              nombreVisible[0] ? "animate" : ""
+            }`}
+          >
             {ranking[0]?.nombre ?? ""}
           </div>
-          <div className="epic-points">
-            {autoRevelado > 2 ? animVals[0].pts : ""} pts
-          </div>
+          <div className="epic-points">{animVals[0].pts} pts</div>
           <div className="epic-estimation">
-            {ranking[0] && autoRevelado > 2
-              ? `${ranking[0].estimacion} cm`
-              : ""}
+            <span className="epic-cm-value">{animVals[0].cms}</span> cm
           </div>
         </div>
         <div
           className="epic-podio-bar epic-podio-3"
-          style={{ height: animVals[2].h }}
+          style={{
+            height: animacionFinalizada
+              ? getBarraHeight(2, maxHeight)
+              : autoRevelado >= 1
+              ? getBarraHeight(2, maxHeight)
+              : "0px"
+          }}
         >
-          <div className="epic-badge epic-badge-3">3</div>
-          <div className="epic-player epic-player-3">
+          <div className={`epic-badge epic-badge-3`}>3</div>
+          <div
+            className={`epic-player epic-player-3 ${
+              nombreVisible[2] ? "animate" : ""
+            }`}
+          >
             {ranking[2]?.nombre ?? ""}
           </div>
-          <div className="epic-points">
-            {autoRevelado > 0 ? animVals[2].pts : ""} pts
-          </div>
+          <div className="epic-points">{animVals[2].pts} pts</div>
           <div className="epic-estimation">
-            {ranking[2] && autoRevelado > 0
-              ? `${ranking[2].estimacion} cm`
-              : ""}
+            <span className="epic-cm-value">{animVals[2].cms}</span> cm
           </div>
         </div>
       </div>
+
+      {/* Botón de Ver Resultados Completos con animación de entrada solo la primera vez */}
+      {animacionFinalizada && (
+        <button
+          className={`reveal-button ${primeraVezBoton ? "entering" : ""}`}
+          onClick={() => {
+            setPrimeraVezBoton(false); // Ya no es la primera vez
+            onVerResultadosCompletos();
+          }}
+          onAnimationEnd={() => {
+            // Remover la clase entering cuando termine la animación
+            setPrimeraVezBoton(false);
+          }}
+        >
+          Ver Resultados Completos
+        </button>
+      )}
     </div>
   );
 }

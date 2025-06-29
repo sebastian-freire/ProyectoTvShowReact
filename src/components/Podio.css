@@ -9,8 +9,9 @@
   z-index: 100;
   overflow: hidden;
   display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 /* Luces laterales animadas */
@@ -108,24 +109,32 @@
   transform: translate(-50%, -50%) rotate(90deg);
 }
 
-/* Podio barras gigantes */
-.epic-podio-outer {
+/* Área para botón de resultados completos */
+.podio-footer {
+  width: 100%;
+  height: 80px; /* Espacio para el botón */
   position: absolute;
   bottom: 0;
-  left: 0;
+  z-index: 201;
+}
+
+/* Podio barras gigantes */
+.epic-podio-outer {
+  position: relative;
   width: 100vw;
   display: flex;
   justify-content: center;
   align-items: flex-end;
   gap: 5vw;
   z-index: 200;
-  height: 80vh;
+  height: calc(100vh - 80px); /* Dejar espacio para el footer */
+  padding-bottom: 135px;
 }
 
 .epic-podio-bar {
   width: 180px;
-  min-height: 120px;
-  max-height: 420px;
+  height: 0;
+  min-height: 200px;
   margin: 0 2vw;
   border-radius: 32px 32px 24px 24px;
   box-shadow: 0 12px 60px 0 #000a, 0 0 80px 10px #fcd20f33;
@@ -135,21 +144,11 @@
   justify-content: flex-end;
   position: relative;
   background: linear-gradient(135deg, #ffd700 0%, #ffa500 100%);
-  transition: height 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55),
-    box-shadow 0.5s;
-  animation: epic-bar-rise 1.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  transition: height 2.5s cubic-bezier(0.68, -0.55, 0.265, 1.55),
+    /* Transición más lenta */ box-shadow 1s;
   overflow: visible;
-}
-
-@keyframes epic-bar-rise {
-  from {
-    transform: scaleY(0.2);
-    opacity: 0.2;
-  }
-  to {
-    transform: scaleY(1);
-    opacity: 1;
-  }
+  transform-origin: bottom center; /* Asegura que la barra crece desde abajo */
+  will-change: height; /* Optimización para la animación */
 }
 
 .epic-podio-1 {
@@ -172,50 +171,158 @@
 
 .epic-badge {
   position: absolute;
-  top: -60px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #fcd20f 0%, #fffbe6 100%);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 32px;
+  border-radius: 32px 32px 8px 8px;
+  background: linear-gradient(
+    135deg,
+    #c0c0c0 0%,
+    #e8e8e8 40%,
+    #fff 50%,
+    #e8e8e8 60%,
+    #c0c0c0 100%
+  );
   color: #1e2a38;
-  font-size: 2.8rem;
+  font-size: 1.1rem;
   font-weight: 900;
-  box-shadow: 0 4px 24px #fcd20f99, 0 2px 8px #000a;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3), 0 1px 4px rgba(192, 192, 192, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 4px solid #fffbe6;
+  border: none;
   z-index: 220;
   animation: epic-badge-pop 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  text-shadow: none;
+  overflow: hidden;
 }
 
 @keyframes epic-badge-pop {
   0% {
-    transform: translateX(-50%) scale(0.2);
+    transform: scale(0.5);
     opacity: 0;
   }
   60% {
-    transform: translateX(-50%) scale(1.2);
+    transform: scale(1.1);
     opacity: 1;
   }
   100% {
-    transform: translateX(-50%) scale(1);
+    transform: scale(1);
     opacity: 1;
+  }
+}
+
+@keyframes badge-shine {
+  0% {
+    left: -100%;
+    opacity: 0;
+  }
+  50% {
+    left: 100%;
+    opacity: 1;
+  }
+  100% {
+    left: 100%;
+    opacity: 0;
   }
 }
 
 .epic-badge-1 {
-  background: linear-gradient(135deg, #ffd700 0%, #fffbe6 100%);
+  background: linear-gradient(
+    135deg,
+    #ffd700 0%,
+    #ffed4e 40%,
+    #fff 50%,
+    #ffed4e 60%,
+    #ffd700 100%
+  );
+  color: #1e2a38;
+  border: none;
+  box-shadow: 0 3px 12px rgba(255, 215, 0, 0.6),
+    0 1px 4px rgba(255, 215, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  text-shadow: none;
+}
+
+.epic-badge-1::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.6),
+    transparent
+  );
+  animation: badge-shine 3s ease-in-out infinite;
 }
 
 .epic-badge-2 {
-  background: linear-gradient(135deg, #c0c0c0 0%, #e0e0e0 100%);
+  background: linear-gradient(
+    135deg,
+    #c0c0c0 0%,
+    #e8e8e8 40%,
+    #fff 50%,
+    #e8e8e8 60%,
+    #c0c0c0 100%
+  );
+  color: #1e2a38;
+  border: none;
+  box-shadow: 0 3px 12px rgba(192, 192, 192, 0.6),
+    0 1px 4px rgba(192, 192, 192, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  text-shadow: none;
+}
+
+.epic-badge-2::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.6),
+    transparent
+  );
+  animation: badge-shine 3s ease-in-out infinite 1s;
 }
 
 .epic-badge-3 {
-  background: linear-gradient(135deg, #cd7f32 0%, #fffbe6 100%);
+  background: linear-gradient(
+    135deg,
+    #cd7f32 0%,
+    #d4956b 40%,
+    #f4e4bc 50%,
+    #d4956b 60%,
+    #cd7f32 100%
+  );
+  color: #1e2a38;
+  border: none;
+  box-shadow: 0 3px 12px rgba(205, 127, 50, 0.6),
+    0 1px 4px rgba(205, 127, 50, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  text-shadow: none;
+}
+
+.epic-badge-3::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.5),
+    transparent
+  );
+  animation: badge-shine 3s ease-in-out infinite 2s;
 }
 
 .epic-player {
@@ -223,22 +330,36 @@
   font-weight: 700;
   color: #fffbe6;
   text-shadow: 0 2px 8px #000a, 0 0 12px #fcd20f99;
-  margin-bottom: 0.5rem;
-  margin-top: 2.5rem;
+  margin-bottom: 0.2rem;
+  margin-top: 0.7rem;
   letter-spacing: 2px;
   text-align: center;
-  animation: epic-player-fadein 1.2s;
+  opacity: 0; /* Inicialmente invisible */
+  animation: none; /* La animación se agregará dinámicamente */
+  padding: 0 10px; /* Padding lateral para nombres largos */
+  height: 2em; /* Espacio reservado fijo para el nombre */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-@keyframes epic-player-fadein {
-  from {
+/* Animación de fade-in para nombres que se aplicará dinámicamente */
+@keyframes epic-player-delayed-fadein {
+  0% {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(15px);
   }
-  to {
+  100% {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.epic-player.animate {
+  animation: epic-player-delayed-fadein 1.5s forwards;
+  opacity: 1; /* Asegurar que se mantenga visible incluso después de la animación */
+  transition: opacity 0.3s ease; /* Transición suave para cambios de opacidad */
+  animation-fill-mode: forwards; /* Mantener los estilos del estado final */
 }
 
 .epic-points {
@@ -247,7 +368,7 @@
   color: #fcd20f;
   text-shadow: 0 2px 8px #000a, 0 0 12px #fffbe6;
   margin-bottom: 0.5rem;
-  animation: epic-points-pop 1.2s;
+  animation: epic-points-pop 2s; /* Animación más lenta */
 }
 
 @keyframes epic-points-pop {
@@ -268,56 +389,364 @@
 .epic-estimation {
   font-size: 1.3rem;
   color: #fffbe6;
-  text-shadow: 0 2px 8px #000a;
+  text-shadow: 0 2px 8px #000a, 0 0 8px #fcd20f66;
   margin-bottom: 1.2rem;
-  animation: epic-estimation-fadein 1.2s;
+  animation: epic-points-pop 2s; /* Animación más lenta */
 }
 
-@keyframes epic-estimation-fadein {
-  from {
+/* Estilo específico para el valor de centímetros */
+.epic-cm-value {
+  display: inline-block;
+  font-weight: 700;
+  position: relative;
+  color: #fcd20f;
+}
+
+/* Efecto de brillo para el valor en cm */
+.epic-cm-value::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  background: radial-gradient(
+    circle,
+    rgba(252, 210, 15, 0.4) 0%,
+    transparent 70%
+  );
+  filter: blur(4px);
+  opacity: 0;
+  animation: epic-cm-glow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes epic-cm-glow {
+  0% {
     opacity: 0;
   }
-  to {
+  100% {
     opacity: 1;
   }
+}
+
+/* Ajuste para el botón de resultados completos */
+.reveal-button {
+  position: fixed;
+  bottom: 35px;
+  z-index: 300;
+  padding: 12px 25px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  background: linear-gradient(135deg, #fcd20f 0%, #ff9900 100%);
+  color: #1e2a38;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s, background 0.3s, color 0.3s;
+  white-space: nowrap;
+  outline: none;
+  letter-spacing: 1px;
+  margin: 0 auto;
+}
+
+/* Clase específica para la animación de entrada (solo primera vez) */
+.reveal-button.entering {
+  opacity: 0;
+  transform: translateY(50px) scale(0.7);
+  animation: reveal-button-entrance 1s ease-out 0.3s forwards;
+}
+
+/* Revelación épica de la medida real */
+.epic-medida-real {
+  position: fixed;
+  top: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 250;
+  text-align: center;
+  color: #fffbe6;
+  pointer-events: none;
+}
+
+.epic-medida-real.revealing {
+  opacity: 0;
+  transform: translateX(-50%) translateY(-30px) scale(0.8);
+  animation: epic-medida-reveal 1.5s ease-out 0.2s forwards;
+}
+
+.epic-medida-title {
+  font-size: 2.5rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  color: #fcd20f;
+  text-shadow: 0 4px 16px #fcd20f99, 0 2px 8px #000a;
+  margin-bottom: 0.05rem;
+  animation: epic-title-glow 2s ease-in-out infinite alternate;
+}
+
+.epic-medida-value {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.epic-numero {
+  font-size: 4rem;
+  font-weight: 900;
+  color: #fffbe6;
+  text-shadow: 0 6px 20px #fcd20f99, 0 3px 12px #000a;
+  background: linear-gradient(135deg, #fcd20f 0%, #fffbe6 50%, #fcd20f 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: epic-numero-pulse 1.5s ease-in-out infinite alternate;
+}
+
+.epic-unidad {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fcd20f;
+  text-shadow: 0 4px 12px #fcd20f66, 0 2px 6px #000a;
+}
+
+.epic-medida-sparkles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.sparkle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #fcd20f;
+  border-radius: 50%;
+  animation: sparkle-twinkle 2s linear infinite;
+  box-shadow: 0 0 12px #fcd20f, 0 0 24px #fcd20f99;
+}
+
+.sparkle-1 {
+  top: 10%;
+  left: 20%;
+  animation-delay: 0s;
+}
+.sparkle-2 {
+  top: 20%;
+  right: 15%;
+  animation-delay: 0.3s;
+}
+.sparkle-3 {
+  top: 60%;
+  left: 10%;
+  animation-delay: 0.6s;
+}
+.sparkle-4 {
+  top: 70%;
+  right: 20%;
+  animation-delay: 0.9s;
+}
+.sparkle-5 {
+  top: 30%;
+  left: 50%;
+  animation-delay: 1.2s;
+}
+.sparkle-6 {
+  top: 80%;
+  left: 60%;
+  animation-delay: 1.5s;
+}
+
+/* Animaciones para la medida real */
+@keyframes epic-medida-reveal {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-30px) scale(0.8);
+  }
+  50% {
+    opacity: 0.9;
+    transform: translateX(-50%) translateY(10px) scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+@keyframes epic-title-glow {
+  0% {
+    text-shadow: 0 4px 16px #fcd20f99, 0 2px 8px #000a;
+  }
+  100% {
+    text-shadow: 0 4px 20px #fcd20fff, 0 2px 12px #000a, 0 0 30px #fcd20f66;
+  }
+}
+
+@keyframes epic-numero-pulse {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  100% {
+    transform: scale(1.05);
+    filter: brightness(1.2);
+  }
+}
+
+@keyframes sparkle-twinkle {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+/* Animación de entrada elegante para el botón */
+@keyframes reveal-button-entrance {
+  0% {
+    opacity: 0;
+    transform: translateY(50px) scale(0.7);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(-8px) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.reveal-button:hover,
+.reveal-button:focus {
+  background: linear-gradient(135deg, #ffe066 0%, #ffb347 100%);
+  color: #1e2a38;
+  /* No mover el botón */
+  box-shadow: 0 0 32px 8px #ffe066cc, 0 6px 25px rgba(0, 0, 0, 0.4);
+  outline: 0;
+  /* Efecto de brillo animado */
+  animation: reveal-glow 0.7s;
+}
+
+@keyframes reveal-glow {
+  0% {
+    box-shadow: 0 0 0 0 #ffe06600, 0 6px 25px rgba(0, 0, 0, 0.4);
+  }
+  60% {
+    box-shadow: 0 0 48px 16px #ffe066cc, 0 6px 25px rgba(0, 0, 0, 0.4);
+  }
+  100% {
+    box-shadow: 0 0 32px 8px #ffe066cc, 0 6px 25px rgba(0, 0, 0, 0.4);
+  }
+}
+
+.reveal-button:active {
+  background: linear-gradient(135deg, #ffd700 0%, #ff9900 100%);
+  color: #1e2a38;
+  transform: scale(0.98);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
 }
 
 @media (max-width: 900px) {
   .epic-podio-bar {
     width: 120px;
+    min-height: 160px;
+    transition: height 2.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Mismo tiempo que la versión desktop */
   }
   .epic-badge {
-    width: 60px;
-    height: 60px;
-    font-size: 2rem;
+    width: 100%;
+    height: 28px;
+    font-size: 1rem;
+    top: 0;
+    border-radius: 32px 32px 6px 6px;
   }
   .epic-player {
     font-size: 1.2rem;
+    margin-top: 1.05rem;
+    margin-bottom: 0.56rem;
+    height: 2em; /* Espacio reservado proporcional a la fuente */
   }
   .epic-points {
     font-size: 1.3rem;
+    margin-bottom: 0.56rem;
+    animation: epic-points-pop 2s; /* Misma duración que la versión desktop */
   }
   .epic-estimation {
     font-size: 1rem;
+    margin-bottom: 1.05rem;
+    animation: epic-points-pop 2s; /* Misma duración que la versión desktop */
+  }
+
+  /* Responsive para medida real */
+  .epic-medida-title {
+    font-size: 2rem;
+    letter-spacing: 3px;
+  }
+  .epic-numero {
+    font-size: 3rem;
+  }
+  .epic-unidad {
+    font-size: 1.5rem;
   }
 }
 
 @media (max-width: 600px) {
   .epic-podio-bar {
     width: 80px;
+    min-height: 130px;
+    transition: height 2.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Mismo tiempo que la versión desktop */
   }
   .epic-badge {
-    width: 40px;
-    height: 40px;
-    font-size: 1.2rem;
+    width: 100%;
+    height: 24px;
+    font-size: 0.85rem;
+    top: 0;
+    border-radius: 24px 24px 5px 5px;
   }
   .epic-player {
     font-size: 0.9rem;
+    margin-top: 0.84rem;
+    margin-bottom: 0.56rem;
+    height: 1.8em; /* Espacio reservado proporcional a la fuente */
   }
   .epic-points {
     font-size: 1rem;
+    margin-bottom: 0.56rem;
+    animation: epic-points-pop 2s; /* Misma duración que la versión desktop */
   }
   .epic-estimation {
     font-size: 0.8rem;
+    margin-bottom: 0.84rem;
+    animation: epic-points-pop 2s; /* Misma duración que la versión desktop */
+  }
+
+  /* Responsive móvil para medida real */
+  .epic-medida-real {
+    top: 40px;
+  }
+  .epic-medida-title {
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+    margin-bottom: 0.05rem;
+  }
+  .epic-numero {
+    font-size: 2.5rem;
+  }
+  .epic-unidad {
+    font-size: 1.2rem;
+  }
+  .sparkle {
+    width: 6px;
+    height: 6px;
   }
 }

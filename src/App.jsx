@@ -1,4 +1,4 @@
-import { useState, createContext, useContext } from "react";
+import { useState, createContext, useContext, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -14,6 +14,7 @@ import IngresoMedidaReal from "./components/IngresoMedidaReal";
 import Cortinas from "./components/Cortinas";
 import Podio from "./components/Podio";
 import ResultadosCompletos from "./components/ResultadosCompletos";
+import FloatingBackButton from "./components/FloatingBackButton";
 import "./App.css";
 
 // Contexto para compartir el estado entre rutas
@@ -28,17 +29,98 @@ const useGame = () => {
   return context;
 };
 
+// Clave para localStorage
+const GAME_STORAGE_KEY = "adivinaLaMedida_gameState";
+
+// Función para cargar estado desde localStorage
+const loadGameState = () => {
+  try {
+    const savedState = localStorage.getItem(GAME_STORAGE_KEY);
+    if (savedState) {
+      return JSON.parse(savedState);
+    }
+  } catch (error) {
+    console.warn("Error al cargar estado del juego:", error);
+  }
+  return {
+    jugadores: [],
+    estimaciones: [],
+    medidaReal: null,
+    puntajes: [],
+    mostrarCortina: false,
+    podioRevelado: false,
+    mostrarResultados: false,
+    ranking: [],
+    cortinaTerminada: false
+  };
+};
+
+// Función para guardar estado en localStorage
+const saveGameState = (state) => {
+  try {
+    localStorage.setItem(GAME_STORAGE_KEY, JSON.stringify(state));
+  } catch (error) {
+    console.warn("Error al guardar estado del juego:", error);
+  }
+};
+
 // Componente proveedor del contexto
 function GameProvider({ children }) {
-  const [jugadores, setJugadores] = useState([]);
-  const [estimaciones, setEstimaciones] = useState([]);
-  const [medidaReal, setMedidaReal] = useState(null);
-  const [puntajes, setPuntajes] = useState([]);
-  const [mostrarCortina, setMostrarCortina] = useState(false);
-  const [podioRevelado, setPodioRevelado] = useState(false);
-  const [mostrarResultados, setMostrarResultados] = useState(false);
-  const [ranking, setRanking] = useState([]);
-  const [cortinaTerminada, setCortinaTerminada] = useState(false);
+  // Cargar estado inicial desde localStorage
+  const initialState = loadGameState();
+
+  const [jugadores, setJugadores] = useState(initialState.jugadores);
+  const [estimaciones, setEstimaciones] = useState(initialState.estimaciones);
+  const [medidaReal, setMedidaReal] = useState(initialState.medidaReal);
+  const [puntajes, setPuntajes] = useState(initialState.puntajes);
+  const [mostrarCortina, setMostrarCortina] = useState(
+    initialState.mostrarCortina
+  );
+  const [podioRevelado, setPodioRevelado] = useState(
+    initialState.podioRevelado
+  );
+  const [mostrarResultados, setMostrarResultados] = useState(
+    initialState.mostrarResultados
+  );
+  const [ranking, setRanking] = useState(initialState.ranking);
+  const [cortinaTerminada, setCortinaTerminada] = useState(
+    initialState.cortinaTerminada
+  );
+
+  // Guardar estado automáticamente cuando cambie
+  useEffect(() => {
+    const currentState = {
+      jugadores,
+      estimaciones,
+      medidaReal,
+      puntajes,
+      mostrarCortina,
+      podioRevelado,
+      mostrarResultados,
+      ranking,
+      cortinaTerminada
+    };
+    saveGameState(currentState);
+  }, [
+    jugadores,
+    estimaciones,
+    medidaReal,
+    puntajes,
+    mostrarCortina,
+    podioRevelado,
+    mostrarResultados,
+    ranking,
+    cortinaTerminada
+  ]);
+
+  // Función para limpiar el localStorage (reiniciar juego)
+  const limpiarPartidaGuardada = () => {
+    try {
+      localStorage.removeItem(GAME_STORAGE_KEY);
+    } catch (error) {
+      console.warn("Error al limpiar partida guardada:", error);
+    }
+  };
 
   // Función para añadir jugadores durante el juego
   const handleAddPlayer = (nombreJugador) => {
@@ -46,6 +128,30 @@ function GameProvider({ children }) {
     setPuntajes((prev) => [...prev, 0]); // Nuevo jugador empieza con 0 puntos
     setEstimaciones((prev) => [...prev, 0]); // Estimación por defecto de 0
   };
+
+  // Función para eliminar un jugador y su puntaje/estimación
+  const handleRemovePlayer = (nombreJugador) => {
+    setJugadores((prev) => prev.filter((j) => j !== nombreJugador));
+    setPuntajes((prev) => {
+      const idx = jugadores.indexOf(nombreJugador);
+      return prev.filter((_, i) => i !== idx);
+    });
+    setEstimaciones((prev) => {
+      const idx = jugadores.indexOf(nombreJugador);
+      return prev.filter((_, i) => i !== idx);
+    });
+  };
+
+  // Función para agregar puntos extra a un jugador
+  function handleAgregarPuntos(nombreJugador, puntos) {
+    setPuntajes((prev) => {
+      const idx = jugadores.indexOf(nombreJugador);
+      if (idx === -1) return prev;
+      const nuevos = [...prev];
+      nuevos[idx] = (nuevos[idx] ?? 0) + puntos;
+      return nuevos;
+    });
+  }
 
   // Calcular ranking y puntajes de la ronda
   const calcularRanking = (estimacionesArr, medida) => {
@@ -85,7 +191,10 @@ function GameProvider({ children }) {
     cortinaTerminada,
     setCortinaTerminada,
     handleAddPlayer,
-    calcularRanking
+    handleRemovePlayer,
+    handleAgregarPuntos,
+    calcularRanking,
+    limpiarPartidaGuardada // Añadido para poder limpiar la partida guardada
   };
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
@@ -94,8 +203,69 @@ function GameProvider({ children }) {
 // Componentes de las páginas
 function InicioPage() {
   const navigate = useNavigate();
+  const {
+    limpiarPartidaGuardada,
+    jugadores,
+    estimaciones,
+    medidaReal,
+    setJugadores,
+    setEstimaciones,
+    setMedidaReal,
+    setPuntajes,
+    setMostrarCortina,
+    setPodioRevelado,
+    setMostrarResultados,
+    setRanking,
+    setCortinaTerminada
+  } = useGame();
 
-  return <PaginaInicio onComenzar={() => navigate("/jugadores")} />;
+  // Verificar si hay una partida guardada
+  const hayPartidaGuardada =
+    jugadores.length > 0 || estimaciones.length > 0 || medidaReal !== null;
+
+  const continuarPartida = () => {
+    // Determinar a qué página navegar según el estado del juego
+    if (medidaReal !== null) {
+      // Si ya hay medida real, ir a resultados
+      navigate("/resultados");
+    } else if (estimaciones.length > 0) {
+      // Si ya hay estimaciones, ir a medida real
+      navigate("/medida-real");
+    } else if (jugadores.length > 0) {
+      // Si solo hay jugadores, ir a estimaciones
+      navigate("/estimaciones");
+    } else {
+      // Por defecto, ir a jugadores
+      navigate("/jugadores");
+    }
+  };
+
+  const empezarNuevaPartida = () => {
+    // Limpiar localStorage
+    limpiarPartidaGuardada();
+
+    // Resetear todos los estados directamente
+    setJugadores([]);
+    setEstimaciones([]);
+    setMedidaReal(null);
+    setPuntajes([]);
+    setMostrarCortina(false);
+    setPodioRevelado(false);
+    setMostrarResultados(false);
+    setRanking([]);
+    setCortinaTerminada(false);
+
+    // Navegar directamente a la página de jugadores
+    navigate("/jugadores");
+  };
+
+  return (
+    <PaginaInicio
+      onComenzar={continuarPartida}
+      onEmpezarDeNuevo={empezarNuevaPartida}
+      hayPartidaGuardada={hayPartidaGuardada}
+    />
+  );
 }
 
 function JugadoresPage() {
@@ -152,11 +322,16 @@ function MedidaRealPage() {
     <div className="component-wrapper">
       <IngresoMedidaReal
         onSubmit={(valor) => {
+          // Limpiar todos los estados primero
+          setPodioRevelado(false);
+          setCortinaTerminada(false);
+          setMostrarResultados(false);
+
+          // Luego establecer los nuevos valores
           setMedidaReal(valor);
           setMostrarCortina(true);
-          setCortinaTerminada(false);
-          setPodioRevelado(false);
-          setMostrarResultados(false);
+
+          // Calcular ranking y actualizar puntajes
           const rk = calcularRanking(estimaciones, valor);
           setRanking(rk);
           setPuntajes((prev) =>
@@ -165,6 +340,8 @@ function MedidaRealPage() {
                 p + (rk.find((r) => r.nombre === jugadores[i])?.puntos ?? 0)
             )
           );
+
+          // Navegar a la página de resultados
           navigate("/resultados");
         }}
       />
@@ -179,10 +356,24 @@ function ResultadosPage() {
     mostrarCortina,
     cortinaTerminada,
     setCortinaTerminada,
-    podioRevelado,
     setPodioRevelado,
-    mostrarResultados
+    mostrarResultados,
+    medidaReal
   } = useGame();
+
+  // Variable para controlar que solo se llame a onFinish una vez
+  const [animacionCompletada, setAnimacionCompletada] = useState(false);
+
+  // Reset del estado cuando se monta el componente
+  useEffect(() => {
+    // Al montar, reiniciamos el estado de animación
+    setAnimacionCompletada(false);
+
+    // Limpieza al desmontar
+    return () => {
+      // No hacemos nada específico al desmontar
+    };
+  }, []);
 
   return (
     <div className="centered-content">
@@ -190,24 +381,16 @@ function ResultadosPage() {
         {!mostrarResultados && (
           <Podio
             ranking={ranking}
-            revelado={cortinaTerminada}
+            medidaReal={medidaReal}
+            revelado={cortinaTerminada && !animacionCompletada}
             onFinish={() => {
               setPodioRevelado(true);
-              setTimeout(() => {
-                navigate("/resultados-completos");
-              }, 3000);
+              setAnimacionCompletada(true);
             }}
+            onVerResultadosCompletos={() => navigate("/resultados-completos")}
           />
         )}
       </div>
-      {podioRevelado && !mostrarResultados && (
-        <button
-          className="reveal-button"
-          onClick={() => navigate("/resultados-completos")}
-        >
-          Ver Resultados Completos
-        </button>
-      )}
       {mostrarCortina && (
         <Cortinas onFinish={() => setCortinaTerminada(true)} />
       )}
@@ -244,7 +427,14 @@ function ResultadosCompletosPage() {
 // Layout principal con sidebar
 function AppLayout() {
   const location = useLocation();
-  const { jugadores, puntajes, handleAddPlayer } = useGame();
+  const navigate = useNavigate();
+  const {
+    jugadores,
+    puntajes,
+    handleAddPlayer,
+    handleRemovePlayer,
+    handleAgregarPuntos
+  } = useGame();
 
   const showSidebar = !["/", "/resultados", "/resultados-completos"].includes(
     location.pathname
@@ -253,13 +443,55 @@ function AppLayout() {
     location.pathname
   );
 
+  // Determinar si mostrar el botón de volver y su funcionalidad
+  const getBackButtonConfig = () => {
+    switch (location.pathname) {
+      case "/jugadores":
+        return {
+          show: true,
+          onClick: () => navigate("/"),
+          title: "Volver al inicio"
+        };
+      case "/estimaciones":
+        return {
+          show: true,
+          onClick: () => navigate("/jugadores"),
+          title: "Volver a ingresar jugadores"
+        };
+      case "/medida-real":
+        return {
+          show: true,
+          onClick: () => navigate("/estimaciones"),
+          title: "Volver a estimaciones"
+        };
+      default:
+        return { show: false };
+    }
+  };
+
+  const backButtonConfig = getBackButtonConfig();
+  console.log(
+    "AppLayout - Current path:",
+    location.pathname,
+    "Button config:",
+    backButtonConfig
+  ); // Debug log
+
   return (
     <>
+      {backButtonConfig.show && (
+        <FloatingBackButton
+          onClick={backButtonConfig.onClick}
+          title={backButtonConfig.title}
+        />
+      )}
       {showSidebar && (
         <Sidebar
           jugadores={jugadores}
           puntajes={puntajes}
           onAddPlayer={handleAddPlayer}
+          onRemovePlayer={handleRemovePlayer}
+          onAgregarPuntos={handleAgregarPuntos}
           etapa={location.pathname}
         />
       )}

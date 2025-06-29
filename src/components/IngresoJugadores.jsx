@@ -9,8 +9,9 @@ export default function IngresoJugadores({
   const [nombre, setNombre] = useState("");
   const agregarJugador = (e) => {
     e.preventDefault();
-    if (nombre.trim() && !jugadores.includes(nombre.trim())) {
-      setJugadores([...jugadores, nombre.trim()]);
+    const nombreMayus = nombre.trim().toUpperCase();
+    if (nombreMayus && !jugadores.includes(nombreMayus)) {
+      setJugadores([...jugadores, nombreMayus]);
       setNombre("");
     }
   };
@@ -22,9 +23,12 @@ export default function IngresoJugadores({
           <input
             type="text"
             value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
+            onChange={(e) =>
+              setNombre(e.target.value.slice(0, 7).toUpperCase())
+            }
             placeholder="Nombre del jugador"
             required
+            maxLength={7}
           />
           <button type="submit" className="add-button">
             Agregar

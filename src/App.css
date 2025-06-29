@@ -36,33 +36,6 @@
   margin: 1rem;
 }
 
-.reveal-button {
-  display: block;
-  margin: 2rem auto;
-  background: var(--color-btn-primary);
-  color: var(--color-hover);
-  border: none;
-  padding: 1rem 2rem;
-  border-radius: 12px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 16px rgba(252, 210, 15, 0.3);
-  align-self: center;
-  max-width: 300px;
-  width: 100%;
-}
-
-.reveal-button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(252, 210, 15, 0.4);
-}
-
-.reveal-button:disabled {
-  display: none;
-}
-
 .centered-content {
   width: 100%;
   max-width: 1200px;

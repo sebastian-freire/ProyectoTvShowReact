@@ -1,9 +1,18 @@
 import React, { useState } from "react";
 import "./Sidebar.css";
 
-export default function Sidebar({ jugadores, puntajes, onAddPlayer, etapa }) {
+export default function Sidebar({
+  jugadores,
+  puntajes,
+  onAddPlayer,
+  onRemovePlayer,
+  onAgregarPuntos,
+  etapa
+}) {
   const [nuevoJugador, setNuevoJugador] = useState("");
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const [jugadorSeleccionado, setJugadorSeleccionado] = useState(null);
+  const [puntosExtra, setPuntosExtra] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -14,8 +23,17 @@ export default function Sidebar({ jugadores, puntajes, onAddPlayer, etapa }) {
     }
   };
 
+  const handleAgregarPuntos = (e) => {
+    e.preventDefault();
+    if (puntosExtra !== "" && jugadorSeleccionado) {
+      onAgregarPuntos(jugadorSeleccionado, Number(puntosExtra));
+      setJugadorSeleccionado(null);
+      setPuntosExtra("");
+    }
+  };
+
   // Solo mostrar el botón para añadir jugadores después de la etapa inicial
-  const puedeAñadirJugadores = etapa > 1;
+  const puedeAñadirJugadores = etapa !== "/jugadores" && etapa !== "/";
 
   // Crear array de jugadores con sus puntajes y ordenar por puntos (mayor a menor)
   const jugadoresOrdenados = jugadores
@@ -43,9 +61,60 @@ export default function Sidebar({ jugadores, puntajes, onAddPlayer, etapa }) {
                   ? "leader"
                   : ""
               }
+              style={{ position: "relative" }}
+              onClick={() => setJugadorSeleccionado(jugador.nombre)}
             >
+              <span
+                className="remove-player-btn"
+                title={`Eliminar ${jugador.nombre}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRemovePlayer(jugador.nombre);
+                }}
+                aria-label={`Eliminar ${jugador.nombre}`}
+                tabIndex={0}
+                role="button"
+              >
+                ×
+              </span>
               <div className="player-name">{jugador.nombre}</div>
               <div className="puntaje">{jugador.puntos} pts</div>
+              {jugadorSeleccionado === jugador.nombre && (
+                <div className="puntos-extra-popup">
+                  <form
+                    onSubmit={handleAgregarPuntos}
+                    className="add-player-form"
+                  >
+                    <div className="puntos-extra-label">Agregar puntos</div>
+                    <input
+                      type="number"
+                      value={puntosExtra}
+                      onChange={(e) =>
+                        setPuntosExtra(e.target.value.replace(/^0+(?!$)/, ""))
+                      }
+                      placeholder="Puntos extra"
+                      className="add-player-input"
+                      autoFocus
+                    />
+                    <div className="form-buttons">
+                      <button type="submit" className="confirm-btn">
+                        +
+                      </button>
+                      <button
+                        type="button"
+                        className="cancel-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setJugadorSeleccionado(null);
+                          setPuntosExtra(0);
+                        }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )}
             </li>
           ))}
         </ul>

@@ -45,6 +45,14 @@
   box-shadow: 0 12px 50px rgba(252, 210, 15, 0.6);
 }
 
+/* Contenedor de botones */
+.botones-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
 /* Botón centrado perfectamente en la pantalla */
 .boton-comenzar {
   position: static;
@@ -108,6 +116,53 @@
 
 .boton-comenzar:hover .boton-efecto {
   left: 100%;
+}
+
+/* Botón para nueva partida */
+.boton-nuevo-juego {
+  position: static;
+  top: auto;
+  left: auto;
+  transform: none;
+  margin-top: 0;
+  display: block;
+  margin-bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  color: var(--color-title);
+  border: 2px solid rgba(252, 210, 15, 0.3);
+  padding: 1rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  opacity: 0;
+  animation: fadeInUp 1s ease-out 1.4s forwards;
+  z-index: 15;
+  backdrop-filter: blur(10px);
+}
+
+.boton-nuevo-juego:hover {
+  background: linear-gradient(
+    135deg,
+    rgba(252, 210, 15, 0.2) 0%,
+    rgba(252, 210, 15, 0.1) 100%
+  );
+  border-color: rgba(252, 210, 15, 0.6);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(252, 210, 15, 0.3);
+}
+
+.boton-nuevo-juego:active {
+  transform: translateY(-1px) scale(1.01);
 }
 
 /* Decoración de fondo con círculos sutiles */

@@ -1,0 +1,54 @@
+/* Botón flotante de volver - posicionado de forma global */
+.floating-back-button {
+  position: fixed;
+  top: 2rem;
+  left: 300px; /* 200px sidebar + 100px margin */
+  z-index: 9999;
+
+  background: var(--color-btn-primary, #fcd20f);
+  color: var(--color-hover, #04092e);
+  border: 2px solid var(--color-border, #0035a9);
+  border-radius: 12px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(0);
+
+  min-width: 120px;
+  white-space: nowrap;
+}
+
+.floating-back-button:hover {
+  background: var(--color-title);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.floating-back-button:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive: ajustar posición en pantallas pequeñas */
+@media (max-width: 768px) {
+  .floating-back-button {
+    top: 1rem;
+    left: 1rem; /* Volver a la posición original en móviles */
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .floating-back-button {
+    top: 0.75rem;
+    left: 0.75rem; /* Volver a la posición original en móviles */
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+}
