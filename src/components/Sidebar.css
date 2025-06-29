@@ -51,6 +51,7 @@
   border-left: 4px solid var(--color-title);
   transition: all 0.3s ease;
   position: relative; /* Para el posicionamiento del botón de eliminar */
+  cursor: pointer;
 }
 
 .sidebar li:hover {

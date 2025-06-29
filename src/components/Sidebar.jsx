@@ -16,8 +16,9 @@ export default function Sidebar({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (nuevoJugador.trim() && !jugadores.includes(nuevoJugador.trim())) {
-      onAddPlayer(nuevoJugador.trim());
+    const nombreProcessed = nuevoJugador.trim().toUpperCase();
+    if (nombreProcessed && !jugadores.includes(nombreProcessed)) {
+      onAddPlayer(nombreProcessed);
       setNuevoJugador("");
       setMostrarFormulario(false);
     }
@@ -135,9 +136,12 @@ export default function Sidebar({
                 <input
                   type="text"
                   value={nuevoJugador}
-                  onChange={(e) => setNuevoJugador(e.target.value)}
+                  onChange={(e) =>
+                    setNuevoJugador(e.target.value.slice(0, 7).toUpperCase())
+                  }
                   placeholder="Nombre del jugador"
                   className="add-player-input"
+                  maxLength={7}
                   autoFocus
                 />
                 <div className="form-buttons">

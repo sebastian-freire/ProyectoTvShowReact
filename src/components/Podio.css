@@ -132,7 +132,7 @@
 }
 
 .epic-podio-bar {
-  width: 180px;
+  width: 210px;
   height: 0;
   min-height: 200px;
   margin: 0 2vw;
@@ -659,7 +659,7 @@
 
 @media (max-width: 900px) {
   .epic-podio-bar {
-    width: 120px;
+    width: 160px;
     min-height: 160px;
     transition: height 2.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Mismo tiempo que la versión desktop */
   }
@@ -702,7 +702,7 @@
 
 @media (max-width: 600px) {
   .epic-podio-bar {
-    width: 80px;
+    width: 110px;
     min-height: 130px;
     transition: height 2.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Mismo tiempo que la versión desktop */
   }
